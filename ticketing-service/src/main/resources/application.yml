@@ -1,0 +1,73 @@
+server:
+  port: 8083
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ticketing?characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: root
+  application:
+    name: ticketingService
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+  instances:
+    ticketingdb:
+      baseConfig: default
+
+resilience4j.retry:
+  instances:
+    ticketingdb:
+      maxAttempts: 2
+      waitDuration: 10s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+
+resilience4j.bulkhead:
+  instances:
+    ticketingdb:
+      maxConcurrentCalls: 20
+      maxWaitDuration: 5ms
+
+resilience4j.thread-pool-bulkhead:
+  instances:
+    default:
+      maxThreadPoolSize: 5
+      coreThreadPoolSize: 5
+      queueCapacity: 10
+
+resilience4j.ratelimiter:
+  instances:
+    ticketingdb:
+      limitForPeriod: 6
+      limitRefreshPeriod: 500ms
+      timeoutDuration: 3s
+
+resilience4j.timelimiter:
+  instances:
+    ticketingdb:
+      timeoutDuration: 2s
+      cancelRunningFuture: true
+

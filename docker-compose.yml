@@ -1,0 +1,21 @@
+version: '3'
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    restart: always
+    volumes:
+      - ./grafana-storage:/var/lib/grafana
+    #network_mode: host
+    ports:
+      - "3000:3000"
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./prometheus-config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    #network_mode: host
+    ports:
+      - "9090:9090"

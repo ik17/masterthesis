@@ -1,4 +1,4 @@
-# Master paper
+# Master thesis project
 This repository is used to store code that was generated for master thesis demonstration. 
 
 To start prometheus and grafana, first fetch the images:
